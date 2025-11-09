@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#E30613">
+    <title>Médiamétrie Inventory Pro</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #F5F5F5;
+            overflow-x: hidden;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* ÉCRAN DE CONFIGURATION */
+        .setup-screen {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920&h=1080&fit=crop') center/cover;
+        }
+
+        .setup-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .setup-box {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 24px rgba(227, 6, 19, 0.4);
+        }
+
+        .logo-m {
+            font-size: 70px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #DDD;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #E30613;
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            color: white;
+            padding: 20px;
+            padding-top: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo-box {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-logo-m {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .user-badge {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        /* CONTENU */
+        .content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .categories-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid;
+        }
+
+        .category-card:active {
+            transform: scale(0.98);
+        }
+
+        .category-card.accessories { border-left-color: #3B82F6; }
+        .category-card.tvm3 { border-left-color: #8B5CF6; }
+        .category-card.streaming { border-left-color: #10B981; }
+        .category-card.history { border-left-color: #F59E0B; }
+        .category-card.qrcodes { border-left-color: #EC4899; }
+
+        .category-icon {
+            font-size: 48px;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* SCANNER */
+        .scanner-header {
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            color: white;
+            padding: 20px;
+            padding-top: 40px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .scanner-zone {
+            background: white;
+            margin: 20px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+            border: 2px solid #E5E7EB;
+        }
+
+        #reader video {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .scan-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn-scan {
+            padding: 14px;
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-scan:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-stop {
+            padding: 14px;
+            background: #6B7280;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-section {
+            background: white;
+            margin: 20px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #E30613;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 16px;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* TABLEAU */
+        .table-container {
+            background: white;
+            margin: 20px;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .inventory-table th {
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .inventory-table td {
+            padding: 12px;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: #EF4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: grid;
+            gap: 12px;
+            margin: 20px;
+        }
+
+        .btn-export, .btn-sync, .btn-clear, .btn-email {
+            width: 100%;
+            padding: 16px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-export {
+            background: #10B981;
+        }
+
+        .btn-email {
+            background: #3B82F6;
+        }
+
+        .btn-sync {
+            background: linear-gradient(135deg, #E30613, #FF6B35);
+        }
+
+        .btn-clear {
+            background: #EF4444;
+        }
+
+        .btn-back-main {
+            width: 100%;
+            padding: 16px;
+            background: #6B7280;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* HISTORIQUE */
+        .history-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .history-item.ajout { border-left-color: #10B981; }
+        .history-item.suppression { border-left-color: #EF4444; }
+        .history-item.modification { border-left-color: #F59E0B; }
+        .history-item.export { border-left-color: #3B82F6; }
+        .history-item.synchronisation { border-left-color: #8B5CF6; }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-action {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .history-details {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .history-operator {
+            font-size: 13px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        /* QR CODES */
+        .qr-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .qr-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .qr-equipment-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .qr-equipment-code {
+            font-size: 14px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 8px 0;
+        }
+
+        .qr-display {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .qr-category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            margin-top: 8px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .scanner-header, .action-buttons {
+                display: none;
+            }
+            .qr-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ÉCRAN DE CONFIGURATION -->
+<div id="setupScreen" class="screen active">
+    <div class="setup-screen">
+        <div class="setup-box">
+            <div class="logo-container">
+                <div class="logo-m">M</div>
+            </div>
+            
+            <h1 class="title">Médiamétrie</h1>
+            <div class="subtitle">INVENTAIRE PRO</div>
+            
+            <div class="input-group">
+                <label class="input-label">Nom *</label>
+                <input type="text" id="inputName" class="input" placeholder="Dupont" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Identifiant *</label>
+                <input type="text" id="inputId" class="input" placeholder="MED001" autocomplete="off">
+            </div>
+            
+            <button class="btn-start" onclick="startApp()">Commencer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ÉCRAN PRINCIPAL -->
+<div id="mainScreen" class="screen">
+    <div class="header">
+        <div class="header-top">
+            <div class="header-logo">
+                <div class="header-logo-box">
+                    <div class="header-logo-m">M</div>
+                </div>
+                <div>
+                    <div class="header-title">Médiamétrie Inventory</div>
+                </div>
+            </div>
+        </div>
+        <div class="user-badge">
+            <div id="userName"></div>
+            <div id="userId"></div>
+        </div>
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-number" id="totalAccessoires">0</div>
+                <div class="stat-label">Accessoires</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalTvm3">0</div>
+                <div class="stat-label">TVM3</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="totalStreaming">0</div>
+                <div class="stat-label">Streaming</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="section-title">SÉLECTIONNEZ UNE CATÉGORIE</div>
+        
+        <div class="categories-grid">
+            <div class="category-card accessories" onclick="startScan('accessoires', 'Accessoires', '🔌')">
+                <div class="category-icon">🔌</div>
+                <div class="category-info">
+                    <div class="category-name">Accessoires</div>
+                    <div class="category-count"><span id="countAccessoires">0</span> élément(s)</div>
+                </div>
+            </div>
+            
+            <div class="category-card tvm3" onclick="startScan('tvm3', 'TVM3', '📱')">
+                <div class="category-icon">📱</div>
+                <div class="category-info">
+                    <div class="category-name">TVM3</div>
+                    <div class="category-count"><span id="countTvm3">0</span> élément(s)</div>
+                </div>
+            </div>
+            
+            <div class="category-card streaming" onclick="startScan('streaming', 'Streaming Meters', '📡')">
+                <div class="category-icon">📡</div>
+                <div class="category-info">
+                    <div class="category-name">Streaming Meters</div>
+                    <div class="category-count"><span id="countStreaming">0</span> élément(s)</div>
+                </div>
+            </div>
+
+            <div class="category-card qrcodes" onclick="showQRCodesScreen()">
+                <div class="category-icon">📱</div>
+                <div class="category-info">
+                    <div class="category-name">QR Codes</div>
+                    <div class="category-count">Génération & Impression</div>
+                </div>
+            </div>
+
+            <div class="category-card history" onclick="showHistoryScreen()">
+                <div class="category-icon">📜</div>
+                <div class="category-info">
+                    <div class="category-name">Historique</div>
+                    <div class="category-count"><span id="countHistory">0</span> action(s)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ÉCRAN SCANNER -->
+<div id="scanScreen" class="screen">
+    <div class="scanner-header">
+        <button class="back-btn" onclick="backToMain()">← Retour</button>
+        <h2 id="scanTitle"></h2>
+    </div>
+    
+    <div class="scanner-zone">
+        <div id="reader" style="display:none;"></div>
+        <div class="scan-buttons">
+            <button class="btn-scan" id="startScan">📷 Scanner</button>
+            <button class="btn-stop" id="stopScan" style="display:none;">🛑 Arrêter</button>
+        </div>
+        <div id="scanStatus" style="margin-top: 12px; text-align: center; color: #666; font-size: 14px;"></div>
+    </div>
+    
+    <div class="form-section">
+        <form id="inventoryForm">
+            <div class="form-group">
+                <label class="form-label">Nom / Description *</label>
+                <input type="text" id="nomAppareil" class="form-input" placeholder="Ex: TVM3 série X" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Numéro de série *</label>
+                <input type="text" id="numeroSerie" class="form-input" placeholder="Scanner ou saisir" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">État</label>
+                <select id="etatAppareil" class="form-select">
+                    <option>Fonctionnel</option>
+                    <option>En panne</option>
+                    <option>En SAV</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Localisation</label>
+                <input type="text" id="localisation" class="form-input" placeholder="Lieu, technicien...">
+            </div>
+            
+            <button type="submit" class="btn-add">Ajouter à l'inventaire</button>
+            <div id="statusMessage"></div>
+        </form>
+    </div>
+    
+    <div class="table-container">
+        <div class="table-title">📦 Inventaire (<span id="inventoryCount">0</span>)</div>
+        <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Rechercher...">
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Nom</th>
+                    <th>N° Série</th>
+                    <th>État</th>
+                    <th>Localisation</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="btn-export" onclick="exportCSV()">
+            <span>📥</span>
+            <span>Télécharger CSV</span>
+        </button>
+        <button class="btn-email" onclick="sendEmail()">
+            <span>📧</span>
+            <span>Envoyer par Email</span>
+        </button>
+        <button class="btn-sync" onclick="syncDatabase()">
+            <span>🔄</span>
+            <span>Synchroniser la base</span>
+        </button>
+        <button class="btn-clear" onclick="clearInventory()">
+            <span>🗑️</span>
+            <span>Vider l'inventaire</span>
+        </button>
+        <button class="btn-back-main" onclick="backToMain()">← Retour au menu</button>
+    </div>
+</div>
+
+<!-- ÉCRAN HISTORIQUE -->
+<div id="historyScreen" class="screen">
+    <div class="scanner-header">
+        <button class="back-btn" onclick="backToMain()">← Retour</button>
+        <h2>📜 Historique des actions</h2>
+    </div>
+    
+    <div class="content">
+        <div style="margin-bottom: 20px; padding: 0 20px;">
+            <input type="text" id="historySearch" class="search-bar" placeholder="🔍 Rechercher dans l'historique...">
+        </div>
+        <div id="historyContainer"></div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-clear" onclick="clearHistory()">
+            <span>🗑️</span>
+            <span>Effacer l'historique</span>
+        </button>
+        <button class="btn-back-main" onclick="backToMain()">← Retour au menu</button>
+    </div>
+</div>
+
+<!-- ÉCRAN QR CODES -->
+<div id="qrCodesScreen" class="screen">
+    <div class="scanner-header">
+        <button class="back-btn" onclick="backToMain()">← Retour</button>
+        <h2>📱 QR Codes des Équipements</h2>
+    </div>
+    
+    <div class="content">
+        <div class="qr-cards-grid">
+            <!-- Câble HDMI -->
+            <div class="qr-card">
+                <div class="qr-equipment-name">🔌 Câble HDMI Premium</div>
+                <div class="qr-equipment-code">HDMI-2024-001</div>
+                <div class="qr-display" id="qr-hdmi"></div>
+                <div class="qr-category-badge">ACCESSOIRES</div>
+            </div>
+
+            <!-- Câble Optique -->
+            <div class="qr-card">
+                <div class="qr-equipment-name">🎵 Câble Optique Audio</div>
+                <div class="qr-equipment-code">OPT-2024-001</div>
+                <div class="qr-display" id="qr-optique"></div>
+                <div class="qr-category-badge">ACCESSOIRES</div>
+            </div>
+
+            <!-- Répéteur WiFi -->
+            <div class="qr-card">
+                <div class="qr-equipment-name">📡 Répéteur WiFi</div>
+                <div class="qr-equipment-code">WIFI-2024-001</div>
+                <div class="qr-display" id="qr-wifi"></div>
+                <div class="qr-category-badge">ACCESSOIRES</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-export" onclick="window.print()">
+            <span>🖨️</span>
+            <span>Imprimer les QR Codes</span>
+        </button>
+        <button class="btn-back-main" onclick="backToMain()">← Retour au menu</button>
+    </div>
+</div>
+
+<script>
+// VARIABLES GLOBALES
+let userData = {};
+let currentCategory = '';
+let currentCategoryName = '';
+let inventaire = [];
+let historique = [];
+let baseAppareils = {
+    "accessoires": {
+        "HDMI-2024-001": "Câble HDMI Premium 2m",
+        "OPT-2024-001": "Câble Optique Audio 1.5m",
+        "WIFI-2024-001": "Répéteur WiFi Dual Band"
+    },
+    "tvm3": {
+        "TVM3-2024-001": "TVM3 Modèle Standard",
+        "TVM3-2024-002": "TVM3 Modèle Pro"
+    },
+    "streaming": {
+        "STR-2024-001": "Streaming Meter Basic",
+        "STR-2024-002": "Streaming Meter Advanced"
+    }
+};
+let html5QrCode = null;
+let filteredItems = [];
+let isScanning = false;
+const storageKey = "inventaireMediametrie";
+const historyKey = "historiqueMediametrie";
+
+// INITIALISATION
+window.onload = function() {
+    const saved = localStorage.getItem('mediametrie_user');
+    if (saved) {
+        userData = JSON.parse(saved);
+        document.getElementById('inputName').value = userData.name;
+        document.getElementById('inputId').value = userData.id;
+    }
+    
+    // Charger base d'appareils depuis localStorage
+    const savedBase = localStorage.getItem("baseAppareils");
+    if(savedBase){
+        baseAppareils = JSON.parse(savedBase);
+    } else {
+        // Sauvegarder la base par défaut
+        localStorage.setItem("baseAppareils", JSON.stringify(baseAppareils));
+    }
+    
+    // Charger inventaire
+    inventaire = JSON.parse(localStorage.getItem(storageKey)) || [];
+    
+    // Charger historique
+    historique = JSON.parse(localStorage.getItem(historyKey)) || [];
+    
+    updateCategoryCounts();
+    
+    // Initialiser la recherche historique
+    const historySearchInput = document.getElementById('historySearch');
+    if (historySearchInput) {
+        historySearchInput.addEventListener('input', e => {
+            renderHistory(e.target.value);
+        });
+    }
+};
+
+// DÉMARRER APP
+function startApp() {
+    const name = document.getElementById('inputName').value.trim();
+    const id = document.getElementById('inputId').value.trim().toUpperCase();
+    
+    if (!name || !id) {
+        alert('❌ Veuillez remplir tous les champs');
+        return;
+    }
+    
+    userData = { name, id };
+    localStorage.setItem('mediametrie_user', JSON.stringify(userData));
+    
+    document.getElementById('userName').textContent = name;
+    document.getElementById('userId').textContent = `ID: ${id}`;
+    
+    updateCategoryCounts();
+    showScreen('mainScreen');
+}
+
+// GESTION DES ÉCRANS
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+// MISE À JOUR DES COMPTEURS
+function updateCategoryCounts() {
+    const counts = {
+        'Accessoires': 0,
+        'TVM3': 0,
+        'Streaming Meters': 0
+    };
+    
+    inventaire.forEach(item => {
+        if (counts.hasOwnProperty(item.type)) {
+            counts[item.type]++;
+        }
+    });
+    
+    document.getElementById('countAccessoires').textContent = counts['Accessoires'];
+    document.getElementById('countTvm3').textContent = counts['TVM3'];
+    document.getElementById('countStreaming').textContent = counts['Streaming Meters'];
+    
+    document.getElementById('totalAccessoires').textContent = counts['Accessoires'];
+    document.getElementById('totalTvm3').textContent = counts['TVM3'];
+    document.getElementById('totalStreaming').textContent = counts['Streaming Meters'];
+    
+    document.getElementById('countHistory').textContent = historique.length;
+}
+
+// AJOUTER À L'HISTORIQUE
+function addToHistory(action, details) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+    });
+    const timeStr = now.toLocaleTimeString('fr-FR', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+    });
+    
+    historique.unshift({
+        action: action,
+        details: details,
+        date: dateStr,
+        time: timeStr,
+        timestamp: now.getTime(),
+        operateur: userData.name
+    });
+    
+    localStorage.setItem(historyKey, JSON.stringify(historique));
+    updateCategoryCounts();
+}
+
+// DÉMARRER SCAN
+function startScan(category, categoryName, icon) {
+    currentCategory = category;
+    currentCategoryName = categoryName;
+    document.getElementById('scanTitle').textContent = categoryName;
+    
+    renderTable();
+    showScreen('scanScreen');
+}
+
+// SCANNER QR CODE - VERSION CORRIGÉE AVEC CAMÉRA ARRIÈRE
+document.getElementById('startScan').addEventListener('click', async function() {
+    const startBtn = document.getElementById('startScan');
+    const stopBtn = document.getElementById('stopScan');
+    const readerDiv = document.getElementById('reader');
+    const statusDiv = document.getElementById('scanStatus');
+    
+    if (isScanning) {
+        statusDiv.textContent = "⚠️ Scanner déjà actif";
+        return;
+    }
+    
+    try {
+        startBtn.disabled = true;
+        statusDiv.textContent = "📷 Initialisation de la caméra...";
+        readerDiv.style.display = 'block';
+        stopBtn.style.display = 'block';
+        
+        html5QrCode = new Html5Qrcode("reader");
+        
+        const cameras = await Html5Qrcode.getCameras();
+        
+        if (!cameras || cameras.length === 0) {
+            throw new Error("Aucune caméra détectée");
+        }
+        
+        statusDiv.textContent = `📷 Caméra prête - ${cameras.length} caméra(s) disponible(s)`;
+        
+        // Trouver et utiliser la caméra ARRIÈRE en priorité
+        let cameraId = cameras[0].id;
+        
+        // Chercher une caméra avec "back", "rear", ou "environment" dans le label
+        const backCamera = cameras.find(camera => {
+            const label = camera.label.toLowerCase();
+            return label.includes('back') || 
+                   label.includes('rear') || 
+                   label.includes('arrière') ||
+                   label.includes('environment');
+        });
+        
+        if (backCamera) {
+            cameraId = backCamera.id;
+            statusDiv.textContent = `📷 Caméra arrière activée`;
+        } else {
+            // Si pas de caméra arrière détectée, utiliser la dernière caméra (souvent la arrière)
+            cameraId = cameras[cameras.length - 1].id;
+            statusDiv.textContent = `📷 Caméra ${cameras.length > 1 ? 'arrière' : 'principale'} activée`;
+        }
+        
+        await html5QrCode.start(
+            cameraId,
+            {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            },
+            (decodedText, decodedResult) => {
+                document.getElementById('numeroSerie').value = decodedText;
+                checkDevice(decodedText);
+                statusDiv.textContent = "✅ Code scanné avec succès !";
+                playBeep();
+                
+                // Arrêter le scan après succès
+                setTimeout(() => {
+                    stopScanning();
+                }, 500);
+            },
+            (errorMessage) => {
+                // Erreurs de scan (normal si aucun QR code détecté)
+            }
+        );
+        
+        isScanning = true;
+        statusDiv.textContent = "📸 Scan en cours... Présentez le QR code";
+        
+    } catch (err) {
+        console.error("Erreur caméra:", err);
+        statusDiv.textContent = "❌ Erreur: " + err.message;
+        readerDiv.style.display = 'none';
+        stopBtn.style.display = 'none';
+        startBtn.disabled = false;
+        alert("Erreur caméra : " + err.message + "\n\nAssurez-vous d'avoir autorisé l'accès à la caméra.");
+    }
+});
+
+document.getElementById('stopScan').addEventListener('click', stopScanning);
+
+function stopScanning() {
+    if (html5QrCode && isScanning) {
+        html5QrCode.stop().then(() => {
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('stopScan').style.display = 'none';
+            document.getElementById('startScan').disabled = false;
+            document.getElementById('scanStatus').textContent = "";
+            isScanning = false;
+            html5QrCode = null;
+        }).catch(err => {
+            console.error("Erreur arrêt:", err);
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('stopScan').style.display = 'none';
+            document.getElementById('startScan').disabled = false;
+            isScanning = false;
+        });
+    }
+}
+
+// VÉRIFIER APPAREIL
+function checkDevice(code){
+    const statusEl = document.getElementById('statusMessage');
+    let found = false;
+    
+    for (let type in baseAppareils){
+        if(baseAppareils[type][code]){
+            statusEl.className = 'status-message status-success';
+            statusEl.textContent = "✅ Appareil reconnu : " + baseAppareils[type][code];
+            document.getElementById('nomAppareil').value = baseAppareils[type][code];
+            found = true;
+            break;
+        }
+    }
+    
+    if(!found) {
+        statusEl.className = 'status-message status-warning';
+        statusEl.textContent = "⚠️ Appareil inconnu dans la base.";
+    }
+}
+
+// AJOUTER À L'INVENTAIRE
+document.getElementById('inventoryForm').addEventListener('submit', e => {
+    e.preventDefault();
+    
+    const nom = document.getElementById('nomAppareil').value.trim();
+    const numero = document.getElementById('numeroSerie').value.trim();
+    const etat = document.getElementById('etatAppareil').value;
+    const localisation = document.getElementById('localisation').value.trim();
+    const date = new Date().toLocaleString('fr-FR');
+    
+    if(!numero){ 
+        alert("Le numéro de série est obligatoire."); 
+        return; 
+    }
+    
+    // Vérifier si le numéro de série existe déjà
+    const existing = inventaire.find(item => item.numero === numero);
+    if (existing) {
+        if (!confirm(`⚠️ Le numéro de série "${numero}" existe déjà dans l'inventaire (${existing.type}).\nVoulez-vous quand même l'ajouter ?`)) {
+            return;
+        }
+    }
+    
+    const newItem = {
+        type: currentCategoryName,
+        nom,
+        numero,
+        etat,
+        localisation,
+        date,
+        operateur: userData.name
+    };
+    
+    inventaire.push(newItem);
+    localStorage.setItem(storageKey, JSON.stringify(inventaire));
+    
+    // Ajouter à l'historique
+    addToHistory('ajout', `Ajout : ${nom} (N° ${numero}) - ${currentCategoryName}`);
+    
+    renderTable();
+    updateCategoryCounts();
+    document.getElementById('inventoryForm').reset();
+    document.getElementById('statusMessage').textContent = '';
+    playBeep();
+});
+
+// RECHERCHE
+document.getElementById('searchBar').addEventListener('input', e => {
+    const query = e.target.value.toLowerCase();
+    renderTable(query);
+});
+
+// AFFICHER TABLEAU
+function renderTable(filter=""){
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = "";
+    
+    // Filtrer par catégorie actuelle ET par recherche
+    filteredItems = inventaire.filter(item => 
+        item.type === currentCategoryName &&
+        Object.values(item).some(v => String(v).toLowerCase().includes(filter.toLowerCase()))
+    );
+    
+    document.getElementById('inventoryCount').textContent = filteredItems.length;
+    
+    filteredItems.forEach((item) => {
+        // Trouver l'index réel dans inventaire
+        const realIndex = inventaire.indexOf(item);
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.type}</td>
+            <td>${item.nom}</td>
+            <td>${item.numero}</td>
+            <td>${item.etat}</td>
+            <td>${item.localisation || '-'}</td>
+            <td><button class="btn-delete" onclick="deleteItem(${realIndex})">🗑</button></td>
+        `;
+        tableBody.appendChild(tr);
+    });
+    
+    if (filteredItems.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="6" style="text-align:center; padding:24px; color:#999;">Aucun élément trouvé</td>';
+        tableBody.appendChild(tr);
+    }
+}
+
+// SUPPRIMER
+function deleteItem(realIndex){
+    const item = inventaire[realIndex];
+    if(confirm(`Supprimer cet enregistrement ?\n\n${item.nom}\nN° série: ${item.numero}`)){
+        
+        // Ajouter à l'historique avant suppression
+        addToHistory('suppression', `Suppression : ${item.nom} (N° ${item.numero}) - ${item.type}`);
+        
+        inventaire.splice(realIndex, 1);
+        localStorage.setItem(storageKey, JSON.stringify(inventaire));
+        renderTable(document.getElementById('searchBar').value);
+        updateCategoryCounts();
+        playBeep();
+    }
+}
+
+// VIDER L'INVENTAIRE
+function clearInventory() {
+    if (inventaire.length === 0) {
+        alert("L'inventaire est déjà vide.");
+        return;
+    }
+    
+    if (confirm(`⚠️ ATTENTION !\n\nVoulez-vous vraiment supprimer TOUS les ${inventaire.length} éléments de l'inventaire ?\n\nCette action est irréversible !`)) {
+        if (confirm("Êtes-vous vraiment sûr ? Cette action ne peut pas être annulée.")) {
+            addToHistory('suppression', `Vidage complet de l'inventaire (${inventaire.length} éléments supprimés)`);
+            
+            inventaire = [];
+            localStorage.setItem(storageKey, JSON.stringify(inventaire));
+            renderTable();
+            updateCategoryCounts();
+            alert("✅ Inventaire vidé avec succès !");
+        }
+    }
+}
+
+// EXPORT CSV
+function exportCSV() {
+    if(inventaire.length === 0){ 
+        alert("Aucune donnée à exporter."); 
+        return; 
+    }
+    
+    try {
+        const csv = [
+            ["Type","Nom","Numéro de série","État","Localisation","Date","Opérateur"].join(","),
+            ...inventaire.map(i => [
+                i.type, 
+                i.nom, 
+                i.numero, 
+                i.etat, 
+                i.localisation || '', 
+                i.date, 
+                i.operateur
+            ].map(v => '"' + String(v).replace(/"/g,'""') + '"').join(","))
+        ].join("\n");
+
+        const BOM = "\uFEFF";
+        const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const timestamp = new Date().toISOString().slice(0,19).replace(/[T:]/g,'-');
+        link.download = `inventaire_mediametrie_${timestamp}.csv`;
+        link.href = url;
+        
+        // Pour iOS/Safari
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        addToHistory('export', `Export CSV de ${inventaire.length} éléments`);
+        playBeep();
+        alert(`✅ Export CSV réussi !\n${inventaire.length} élément(s) exporté(s)`);
+    } catch (error) {
+        console.error("Erreur export:", error);
+        alert("❌ Erreur lors de l'export : " + error.message);
+    }
+}
+
+// ENVOYER PAR EMAIL
+function sendEmail() {
+    if(inventaire.length === 0){ 
+        alert("Aucune donnée à envoyer."); 
+        return; 
+    }
+    
+    // Créer le CSV
+    const csv = [
+        ["Type","Nom","Numéro de série","État","Localisation","Date","Opérateur"].join(","),
+        ...inventaire.map(i => [
+            i.type, i.nom, i.numero, i.etat, i.localisation || '', i.date, i.operateur
+        ].map(v => '"' + String(v).replace(/"/g,'""') + '"').join(","))
+    ].join("\n");
+    
+    // Créer le corps de l'email
+    const subject = encodeURIComponent(`Inventaire Médiamétrie - ${new Date().toLocaleDateString('fr-FR')}`);
+    const body = encodeURIComponent(
+        `Bonjour,\n\nVeuillez trouver ci-dessous l'inventaire Médiamétrie :\n\n` +
+        `Total d'éléments : ${inventaire.length}\n` +
+        `Exporté par : ${userData.name} (${userData.id})\n` +
+        `Date : ${new Date().toLocaleString('fr-FR')}\n\n` +
+        `Détails (format CSV) :\n\n${csv}\n\n` +
+        `Cordialement,\n${userData.name}`
+    );
+    
+    // Ouvrir le client email
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    
+    addToHistory('export', `Envoi par email de ${inventaire.length} éléments`);
+    playBeep();
+}
+
+// SYNCHRONISER BASE
+async function syncDatabase() {
+    const confirmSync = confirm("⚠️ Cette action va télécharger la base de données des appareils depuis le serveur.\n\nContinuer ?");
+    if (!confirmSync) return;
+    
+    try {
+        const res = await fetch("https://elailam.fr/inventaire/appareils.json?_=" + Date.now());
+        if(!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
+        
+        const data = await res.json();
+        
+        // Vérifier que les données sont au bon format
+        if (typeof data !== 'object') {
+            throw new Error("Format de données invalide");
+        }
+        
+        baseAppareils = data;
+        localStorage.setItem("baseAppareils", JSON.stringify(baseAppareils));
+        playBeep();
+        
+        // Compter le nombre d'appareils
+        let totalDevices = 0;
+        for (let category in baseAppareils) {
+            if (typeof baseAppareils[category] === 'object') {
+                totalDevices += Object.keys(baseAppareils[category]).length;
+            }
+        }
+        
+        addToHistory('synchronisation', `Mise à jour de la base (${totalDevices} appareils)`);
+        alert(`✅ Base mise à jour avec succès !\n\n${totalDevices} appareil(s) dans la base.`);
+    } catch(e) {
+        console.error("Erreur sync:", e);
+        alert("⚠️ Échec de la mise à jour de la base :\n\n" + e.message + "\n\nVérifiez votre connexion internet et l'URL du serveur.");
+    }
+}
+
+// AFFICHER HISTORIQUE
+function showHistoryScreen() {
+    showScreen('historyScreen');
+    renderHistory();
+}
+
+// RENDU HISTORIQUE
+function renderHistory(filter = "") {
+    const container = document.getElementById('historyContainer');
+    container.innerHTML = "";
+    
+    let filtered = historique;
+    if (filter) {
+        const query = filter.toLowerCase();
+        filtered = historique.filter(h => 
+            h.action.toLowerCase().includes(query) ||
+            h.details.toLowerCase().includes(query) ||
+            h.operateur.toLowerCase().includes(query) ||
+            h.date.includes(query) ||
+            h.time.includes(query)
+        );
+    }
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="no-history">📭 Aucun historique disponible</div>';
+        return;
+    }
+    
+    filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `history-item ${item.action}`;
+        
+        let actionIcon = '';
+        let actionText = '';
+        
+        switch(item.action) {
+            case 'ajout':
+                actionIcon = '➕';
+                actionText = 'AJOUT';
+                break;
+            case 'suppression':
+                actionIcon = '🗑️';
+                actionText = 'SUPPRESSION';
+                break;
+            case 'export':
+                actionIcon = '📥';
+                actionText = 'EXPORT';
+                break;
+            case 'synchronisation':
+                actionIcon = '🔄';
+                actionText = 'SYNCHRONISATION';
+                break;
+            default:
+                actionIcon = '📝';
+                actionText = item.action.toUpperCase();
+        }
+        
+        div.innerHTML = `
+            <div class="history-header">
+                <div class="history-action">${actionIcon} ${actionText}</div>
+                <div class="history-date">${item.date} à ${item.time}</div>
+            </div>
+            <div class="history-details">${item.details}</div>
+            <div class="history-operator">Par : ${item.operateur}</div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+// EFFACER HISTORIQUE
+function clearHistory() {
+    if (historique.length === 0) {
+        alert("L'historique est déjà vide.");
+        return;
+    }
+    
+    if (confirm(`Voulez-vous vraiment effacer tout l'historique ?\n\n${historique.length} action(s) seront supprimées.`)) {
+        historique = [];
+        localStorage.setItem(historyKey, JSON.stringify(historique));
+        renderHistory();
+        updateCategoryCounts();
+        alert("✅ Historique effacé avec succès !");
+    }
+}
+
+// AFFICHER ÉCRAN QR CODES
+function showQRCodesScreen() {
+    showScreen('qrCodesScreen');
+    
+    // Nettoyer les anciens QR codes
+    document.getElementById('qr-hdmi').innerHTML = '';
+    document.getElementById('qr-optique').innerHTML = '';
+    document.getElementById('qr-wifi').innerHTML = '';
+    
+    // Générer les nouveaux QR codes
+    setTimeout(() => {
+        new QRCode(document.getElementById("qr-hdmi"), {
+            text: "HDMI-2024-001",
+            width: 150,
+            height: 150,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        new QRCode(document.getElementById("qr-optique"), {
+            text: "OPT-2024-001",
+            width: 150,
+            height: 150,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        new QRCode(document.getElementById("qr-wifi"), {
+            text: "WIFI-2024-001",
+            width: 150,
+            height: 150,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }, 100);
+}
+
+// RETOUR MENU
+function backToMain() {
+    stopScanning();
+    document.getElementById('searchBar').value = '';
+    updateCategoryCounts();
+    showScreen('mainScreen');
+}
+
+// BIP SONORE
+function playBeep() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.15);
+    } catch (error) {
+        console.log('Beep error:', error);
+    }
+}
+</script>
+
+</body>
+</html>
